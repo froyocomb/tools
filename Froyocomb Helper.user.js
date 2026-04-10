@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Froyocomb Helper
 // @namespace    https://dobby233liu.neocities.org
-// @version      v1.1.17a
+// @version      v1.1.18
 // @description  Tool for speeding up the process of finding commits from before a specific date (i.e. included with a specific build). Developed for Froyocomb, the Android pre-release source reconstruction project.
 // @author       Liu Wenyuan & Froyocomb Team
 // @match        https://android.googlesource.com/*
@@ -20,7 +20,12 @@
 
 "use strict";
 
+const ON_GOOGLESOURCE = location.hostname.endsWith(".googlesource.com");
 const SITE = location.hostname.split(".").reverse()[2];
+
+const AUTHORIZED_ACCESS_PATH2 = "/a";
+const AUTHORIZED_ACCESS_PATH = AUTHORIZED_ACCESS_PATH2 + "/";
+const USE_AUTHORIZED_ACCESS = ON_GOOGLESOURCE ? location.pathname.startsWith(AUTHORIZED_ACCESS_PATH) : false;
 
 // JANK
 function getForCurrentSite(config, defaultValue) {
@@ -203,9 +208,15 @@ function createCopyButtonFactory(title) {
 }
 
 function getRepoHomePath(pathname) {
-    const i = pathname.indexOf("/+");
-    if (i >= 0)
-        return pathname.substring(0, i);
+    if (ON_GOOGLESOURCE) {
+        const i = pathname.indexOf(AUTHORIZED_ACCESS_PATH);
+        if (i >= 0)
+            pathname = pathname.substring(AUTHORIZED_ACCESS_PATH.length - 1);
+    }
+
+    const j = pathname.indexOf("/+");
+    if (j >= 0)
+        return pathname.substring(0, j);
     return pathname.replace(/\/+$/, "");
 }
 
@@ -244,7 +255,7 @@ const AUTHOR_ALLOWLIST = (function(site) {
         site == "chromium"
         // idk
         // normally during 4.4 chromium-automerger@android is SLIGHTLY more reliable
-        || (site == "android" && getRepoHomePath(location.pathname).includes("/platform/external/chromium_org"))
+        || (site == "android" && getRepoHomePath(location.pathname).startsWith("/platform/external/chromium_org"))
     ) {
         authorAllowlist = authorAllowlist.concat([
             /@(?:[A-Za-z0-9\-]+?\.)*chromium\.org/
@@ -304,7 +315,7 @@ if (document.querySelector(".RepoShortlog")) {
 
         function updateRefLink(link, refType, refName, viewType) {
             const ref = formatRef(refType, refName);
-            link.href = getPathToRef(getRepoHomePath(location.pathname), ref, viewType);
+            link.href = getPathToRef((USE_AUTHORIZED_ACCESS ? AUTHORIZED_ACCESS_PATH2 : "") + getRepoHomePath(location.pathname), ref, viewType);
             link.innerText = "Go to " + viewType + " of " + ref;
             return link;
         }
@@ -564,7 +575,7 @@ if (document.querySelector(".RepoShortlog")) {
                     return;
                 }
 
-                const url = new URL(getPathToRef("/platform/build", formatRef("commit", hash)), location.origin);
+                const url = new URL(getPathToRef(`${USE_AUTHORIZED_ACCESS ? AUTHORIZED_ACCESS_PATH2 : ""}/platform/build`, formatRef("commit", hash)), location.origin);
                 url.searchParams.set("format", "JSON");
 
                 const response = await fetch(url.href);
