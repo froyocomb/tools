@@ -1,5 +1,5 @@
 #!/bin/bash
-# Easy to fool over, also might not work in earlier implementations, unless it is standarized
+# Easy to fool over, also might not work in earlier implementations, unless it is standardized
 VERSION_ID=`cat /etc/os-release | grep "VERSION_ID" | sed 's/VERSION_ID=//g' | sed 's/["]//g'`
 CODENAME=`cat /etc/lsb-release | grep "DISTRIB_CODENAME" | sed 's/DISTRIB_CODENAME=//g' | sed 's/["]//g'` 
 
@@ -134,7 +134,7 @@ echo "q - Go back to the main menu"
    export JDK_VERSION=java-8-openjdk-amd64
    detect_jdk
       else
-   error_msg 'You cannot install JDK 8 on your system.'
+   error_msg 'You must run Ubuntu 14.04 to install JDK 8.'
    select_jdk
     fi ;;
  q)
