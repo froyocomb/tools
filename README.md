@@ -17,7 +17,8 @@ Download the script from the repository [here](https://raw.githubusercontent.com
 
 ```sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/froyocomb/tools/main/envsetup.sh)"```
 
-
+## Android OTA Patcher
+@main3782's batch script, manually applies old Android OTA patches on top of existing files. Requires bspatch.exe and xdelta3.exe, which are included.
 
 
 	
