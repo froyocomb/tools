@@ -2,7 +2,7 @@ tools: Froyocomb Helper & Environment Setup
 ===========
 
 ## Froyocomb Helper
-@Dobby233Liu's userscript, that highlights all commits present to a certain point in time. The tool is meant for use with [AOSP](android.googlesource.com) and [Chromium](chromium.googlesource.com)'s Git instances only.
+@Dobby233Liu's userscript, that highlights all commits present to a certain point in time. The tool is meant for use with [AOSP](https://android.googlesource.com) and [Chromium](https://chromium.googlesource.com)'s Git instances only.
 
 #### Installing Froyocomb Helper
 
