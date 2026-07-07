@@ -20,6 +20,9 @@ Download the script from the repository [here](https://raw.githubusercontent.com
 ## Android OTA Patcher
 @main3782's batch script, manually applies old Android OTA patches on top of existing files. Requires bspatch.exe and xdelta3.exe, which are included.
 
+## android.googlesource.com Dark Mode
+Vibecoded CSS script for the android.googlesource.com web-page in order to turn it from light mode to dark mode.
+
 
 	
 	
