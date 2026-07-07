@@ -94,9 +94,6 @@ input.CloneRepo-command {
 }
 
 /* Commit log */
-.CommitLog-item {
-  border-bottom: 1px solid var(--border) !important;
-}
 .CommitLog-item:hover {
   background: var(--bg-hover) !important;
 }
@@ -383,10 +380,6 @@ html body .fch-LoginHint {
 /* Commit log highlight overlays (the "Light 'em up!" feature) -
    toned down from solid bright yellow/orange to translucent tints with a
    colored left accent, so highlighted rows still stand out but the
-   underlying text (styled elsewhere in this file) stays readable. */
-/* Commit log highlight overlays (the "Light 'em up!" feature) -
-   toned down from solid bright yellow/orange to translucent tints with a
-   colored left accent, so highlighted rows still stand out but the
    underlying text (styled elsewhere in this file) stays readable.
    Three states on the log list page:
      - lightedUp:        before the reference date, from an allowlisted
@@ -398,16 +391,16 @@ html body .fch-LoginHint {
    (Note: this is separate from the blue "Chromium/upstream" indicator
    used on the individual commit page, further below.) */
 html body .CommitLog-item--fch-lightedUp {
-  background: rgba(38, 198, 173, 0.20) !important;
-  box-shadow: inset 3px 0 0 #26c6a5;
+  background: rgba(255, 214, 0, 0.20) !important;
+  box-shadow: inset 3px 0 0 #ffd600;
 }
 html body .CommitLog-item--fch-lightedUp-exact {
-  background: rgba(58, 110, 165, 0.34) !important;
-  box-shadow: inset 3px 0 0 #3f7ab0;
+  background: rgba(255, 152, 0, 0.30) !important;
+  box-shadow: inset 3px 0 0 #ff9800;
 }
 html body .CommitLog-item--fch-lightedUp-lesser {
-  background: rgba(38, 198, 173, 0.09) !important;
-  box-shadow: inset 3px 0 0 rgba(38, 198, 173, 0.5);
+  background: rgba(255, 224, 130, 0.09) !important;
+  box-shadow: inset 3px 0 0 rgba(255, 214, 0, 0.5);
 }
 
 /* Without this, the plain row-hover rule (.CommitLog-item:hover) has higher
@@ -416,13 +409,13 @@ html body .CommitLog-item--fch-lightedUp-lesser {
    have equal-or-greater specificity so the highlight tint persists (and
    brightens slightly) on hover instead of disappearing. */
 html body .CommitLog-item--fch-lightedUp:hover {
-  background: rgba(38, 198, 173, 0.30) !important;
+  background: rgba(255, 214, 0, 0.30) !important;
 }
 html body .CommitLog-item--fch-lightedUp-exact:hover {
-  background: rgba(58, 110, 165, 0.44) !important;
+  background: rgba(255, 152, 0, 0.40) !important;
 }
 html body .CommitLog-item--fch-lightedUp-lesser:hover {
-  background: rgba(38, 198, 173, 0.18) !important;
+  background: rgba(255, 224, 130, 0.18) !important;
 }
 
 /* The script also sets some highlight colors as inline styles directly via
