@@ -104,10 +104,10 @@ input.CloneRepo-command {
   color: #ce9178 !important;
 }
 
-.CommitLog-item > a:not(.CommitLog-sha1):not(.CommitLog-branchLabel) {
+.CommitLog-item > a:not(.CommitLog-sha1):not(.CommitLog-branchLabel):not(.CommitLog-tagLabel) {
   color: var(--text) !important;
 }
-.CommitLog-item > a:not(.CommitLog-sha1):not(.CommitLog-branchLabel):visited {
+.CommitLog-item > a:not(.CommitLog-sha1):not(.CommitLog-branchLabel):not(.CommitLog-tagLabel):visited {
   color: var(--link-visited) !important;
 }
 
@@ -117,19 +117,11 @@ input.CloneRepo-command {
 }
 
 .CommitLog-branchLabel {
-  background: #2d3a2d !important;
   color: #9fd89f !important;
-  border: 1px solid #3f5a3f !important;
-  border-radius: 3px;
-  padding: 0 4px;
 }
 
 .CommitLog-tagLabel {
-  background: #2a3a4a !important;
   color: #9fc5e8 !important;
-  border: 1px solid #3f5a7a !important;
-  border-radius: 3px;
-  padding: 0 4px;
 }
 
 .LogNav-next,
@@ -328,6 +320,32 @@ table.FileContents {
 
 .DiffSummary {
   color: var(--text-dim) !important;
+}
+
+/* ==========================================================================
+   Diff / patch content view (e.g. .../+/<sha1>^!/)
+   ========================================================================== */
+
+.Diff,
+.Diff-unified {
+  background: var(--mono-bg) !important;
+  color: var(--text) !important;
+}
+
+.Diff-fileIndex {
+  color: var(--text-dim) !important;
+}
+
+.Diff-hunk {
+  color: #79c0ff !important;
+}
+
+.Diff-insert {
+  color: #7ee787 !important;
+}
+
+.Diff-delete {
+  color: #ff7b72 !important;
 }
 
 /* ==========================================================================
