@@ -349,6 +349,34 @@ table.FileContents {
 }
 
 /* ==========================================================================
+   Google generic infrastructure error page (e.g. NOT_FOUND / permission
+   denied). This is served directly by Google's frontend, not by Gitiles,
+   so it doesn't use any of the .Site/.Header/etc classes above - it ships
+   its own inline <style> with a hardcoded white background instead.
+   ========================================================================== */
+
+html {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+body {
+  color: var(--text) !important;
+}
+
+p, pre, b {
+  color: var(--text) !important;
+}
+
+pre {
+  color: var(--text-dim) !important;
+}
+
+a, a:visited {
+  color: var(--link) !important;
+}
+
+/* ==========================================================================
    Froyocomb Helper userscript compatibility
    This userscript injects its own <style> tags with light-theme, bright
    yellow colors for its floating panels and commit highlighting. We can't
