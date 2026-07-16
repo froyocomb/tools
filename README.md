@@ -1,9 +1,6 @@
 tools: Froyocomb Helper & Environment Setup
 ===========
 
-## FakeMarket, ProvisionCDMA and LightEmUp!
-These quality of life applications are included within the `applications` folder. Each applications has its own `README.md` explaining what the app does.
-
 ## Froyocomb Helper
 @Dobby233Liu's userscript, that highlights all commits present to a certain point in time. The tool is meant for use with [AOSP](https://android.googlesource.com) and [Chromium](https://chromium.googlesource.com)'s Git instances only.
 
@@ -19,6 +16,9 @@ To install Froyocomb Helper, use a userscript manager such as [Tampermonkey](htt
 Download the script from the repository [here](https://raw.githubusercontent.com/froyocomb/tools/main/envsetup.sh) or use the command below (Ubuntu 14.04+). There are no dependencies required to use the script.
 
 ```sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/froyocomb/tools/main/envsetup.sh)"```
+
+## FakeMarket, ProvisionCDMA and LightEmUp!
+These quality of life applications are included within the `applications` folder. Each applications has its own `README.md` explaining what the app does.
 
 ## Android OTA Patcher
 @main3782's batch script, manually applies old Android OTA patches on top of existing files. Requires bspatch.exe and xdelta3.exe, which are included.
