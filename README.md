@@ -1,4 +1,4 @@
-tools: Froyocomb Helper & Environment Setup
+tools: Froyocomb Tools
 ===========
 
 ## Froyocomb Helper
