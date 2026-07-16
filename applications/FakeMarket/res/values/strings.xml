@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2007 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<!-- This file contains resource definitions for displayed strings, allowing
+     them to be changed based on the locale and options. -->
+
+<resources>
+    <string name="app_name">Fake Market</string>
+    <string name="app_name_launcher">Market</string>
+
+    <string name="main_text">This is an app that spoofs the Market icon seen in the top right corner of the all apps list in Android Honeycomb and onwards. The application acts as an app market in order to trick the operating system into thinking one is installed. It does not serve any other purpose.</string>
+    <string name="sub_text">If the application does not run after pressing the icon in the all apps list, the device must be rebooted before the feature will start working.</string>
+    <string name="author_text">By Froyocomb @ 2026</string>
+</resources>
