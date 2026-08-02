@@ -26,8 +26,5 @@ These quality of life applications are included within the `applications` folder
 ## android.googlesource.com Dark Mode
 Vibecoded CSS script for the android.googlesource.com web-page in order to turn it from light mode to dark mode.
 
-## GOTA Prober
-Python script originally authored by @laniku and improved by @RYuhMine. This is located at [`froyocomb/ota_prober`](https://github.com/froyocomb/ota_prober).
-
 ## Framebuffer screenshot
 Vibecoded python script that manually grabs the contents of `/dev/fb0` and converts it to PNG, bypassing the bug that DDMS has doing so.
