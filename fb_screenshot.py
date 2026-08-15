@@ -25,9 +25,13 @@ values scale correctly across the full 0-255 range.
 Requirements
 ------------
     - Python 3.7+
-    - Pillow  (pip install pillow)
-    - Numpy (pip install numpy)
-    - adb.exe, AdbWinApi.dll, AdbWinUsb.dll in the same directory as the script
+    - Pillow  (pip install Pillow)
+    - adb.exe available either:
+        a) sitting in the same folder as this script (on Windows, older
+           adb.exe builds also need AdbWinApi.dll and AdbWinUsbApi.dll
+           alongside it -- just drop all three files next to this script), or
+        b) on your system PATH
+      Device connected with USB debugging on (or emulator running)
 
 Usage
 -----
@@ -40,13 +44,22 @@ Usage
 
     # If you already have a raw dump on disk (e.g. from `adb pull /dev/fb0 fb`)
     python fb_screenshot.py screenshot.png --raw-file fb --width 320 --height 240 --bpp 16
+
+    # Give yourself 5 seconds to set up an interaction on the device (e.g.
+    # holding a widget mid-drag) before the capture actually happens. A
+    # countdown is printed to the console; the capture fires the instant
+    # it hits zero, so keep holding through "1..."
+    python fb_screenshot.py screenshot.png --delay 5
 """
 
 import argparse
+import shutil
 import subprocess
 import sys
 import os
 import tempfile
+import time
+import math
 
 try:
     from PIL import Image
@@ -58,15 +71,50 @@ except ImportError:
 FB_DEVICE_PATHS = ["/dev/graphics/fb0", "/dev/fb0"]
 
 
+def find_adb():
+    """
+    Locate the adb executable. Checked in order:
+      1. The same folder as this script (e.g. adb.exe dropped alongside it,
+         which is the simplest setup on Windows -- no PATH editing needed).
+      2. The system PATH (via shutil.which, which correctly handles the
+         .exe extension and PATHEXT on Windows -- plain "adb" as a bare
+         subprocess argument does NOT get resolved this way on Windows).
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    for name in ("adb.exe", "adb"):
+        candidate = os.path.join(script_dir, name)
+        if os.path.isfile(candidate):
+            return candidate
+
+    found = shutil.which("adb")
+    if found:
+        return found
+
+    raise RuntimeError(
+        "Could not find adb. Either:\n"
+        f"  - drop adb.exe (and, for older platform-tools, AdbWinApi.dll +\n"
+        f"    AdbWinUsbApi.dll) into this folder: {script_dir}\n"
+        "  - or add adb's folder to your system PATH"
+    )
+
+
 def run_adb(args, **kw):
-    return subprocess.run(["adb"] + args, **kw)
+    adb_path = find_adb()
+    return subprocess.run([adb_path] + args, **kw)
 
 
 def pull_framebuffer(tmp_path):
     """Try each known framebuffer device path until one works."""
     last_err = None
     for dev_path in FB_DEVICE_PATHS:
-        result = run_adb(["pull", dev_path, tmp_path], capture_output=True, text=True)
+        try:
+            result = run_adb(["pull", dev_path, tmp_path], capture_output=True, text=True)
+        except RuntimeError as e:
+            # find_adb() couldn't locate adb at all -- no point trying other paths.
+            raise
+        except OSError as e:
+            last_err = str(e)
+            continue
         if result.returncode == 0 and os.path.exists(tmp_path) and os.path.getsize(tmp_path) > 0:
             print(f"Pulled framebuffer from {dev_path} ({os.path.getsize(tmp_path)} bytes)")
             return dev_path
@@ -148,6 +196,30 @@ def decode_framebuffer(data, width, height, bpp):
         raise ValueError(f"Unsupported bpp: {bpp} (only 16 and 32 are handled)")
 
 
+def countdown(delay_seconds):
+    """
+    Prints a live countdown to the console and blocks until it reaches zero.
+    Whole seconds are counted down one at a time; any leftover fractional
+    part is slept first so "3... 2... 1..." lines up with real seconds.
+    """
+    if delay_seconds <= 0:
+        return
+
+    whole_seconds = int(math.floor(delay_seconds))
+    fractional = delay_seconds - whole_seconds
+
+    print(f"Capturing in {delay_seconds:g}s")
+
+    if fractional > 0:
+        time.sleep(fractional)
+
+    for remaining in range(whole_seconds, 0, -1):
+        print(f"  {remaining}...", flush=True)
+        time.sleep(1)
+
+    print("  Capturing now!", flush=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("output", help="Output PNG path")
@@ -155,11 +227,20 @@ def main():
     parser.add_argument("--height", type=int, default=240, help="Framebuffer height in pixels (default: 240)")
     parser.add_argument("--bpp", type=int, default=16, choices=[16, 32], help="Bits per pixel (default: 16 = RGB565)")
     parser.add_argument("--raw-file", help="Use an existing raw framebuffer dump instead of pulling one via adb")
+    parser.add_argument(
+        "--delay",
+        type=float,
+        default=0,
+        help="Seconds to wait (with a console countdown) before capturing -- "
+             "gives you time to set up an interaction on the device, e.g. "
+             "holding a widget mid-drag (default: 0, capture immediately)",
+    )
     args = parser.parse_args()
 
     if args.raw_file:
         raw_path = args.raw_file
     else:
+        countdown(args.delay)
         tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".fb")
         tmp.close()
         raw_path = tmp.name
