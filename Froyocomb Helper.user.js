@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Froyocomb Helper
 // @namespace    https://dobby233liu.neocities.org
-// @version      v1.1.18
+// @version      v1.1.18-VIBECODED-TEMPORARY
 // @description  Tool for speeding up the process of finding commits from before a specific date (i.e. included with a specific build). Developed for Froyocomb, the Android pre-release source reconstruction project.
 // @author       Liu Wenyuan & Froyocomb Team
 // @match        https://android.googlesource.com/*
@@ -54,6 +54,61 @@ if (SITE == "android") {
 
 const createElement = document.createElement.bind(document);
 
+// Colors used throughout this script, exposed as CSS variables so they can be
+// swapped out under Gitiles' native dark mode (html[data-theme="dark"], or no
+// data-theme attribute + prefers-color-scheme: dark for "Auto").
+GM_addStyle(`
+:root {
+    --fch-panel-bg: #ffdb00ee;
+    --fch-toast-bg: #ffdb00f0;
+    --fch-toast-border: #ffe54755;
+    --fch-toast-error-bg: #ff0004f0;
+    --fch-toast-error-border: #ff474755;
+    --fch-loginhint-color: #ff2f00;
+    --fch-committer-highlight-bg: #ffee3366;
+    --fch-time-highlight-bg: #ffff00;
+    --fch-time-highlight-lesser-bg: #aadfff77;
+    --fch-lightedup-bg: #ffff00;
+    --fch-lightedup-exact-bg: #ffa400;
+    --fch-lightedup-lesser-bg: #eeee0040;
+    --fch-parentlink-bg: #aaccaa;
+}
+
+html[data-theme="dark"] {
+    --fch-panel-bg: #3c3600ee;
+    --fch-toast-bg: #4a4200f0;
+    --fch-toast-border: #7a6d0099;
+    --fch-toast-error-bg: #5c0002f0;
+    --fch-toast-error-border: #a3232399;
+    --fch-loginhint-color: #ff6e57;
+    --fch-committer-highlight-bg: #7a6d0066;
+    --fch-time-highlight-bg: #6b5e00;
+    --fch-time-highlight-lesser-bg: #274d6677;
+    --fch-lightedup-bg: #6b5e00;
+    --fch-lightedup-exact-bg: #a35a00;
+    --fch-lightedup-lesser-bg: #4d4d0040;
+    --fch-parentlink-bg: #2f4f2f;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+        --fch-panel-bg: #3c3600ee;
+        --fch-toast-bg: #4a4200f0;
+        --fch-toast-border: #7a6d0099;
+        --fch-toast-error-bg: #5c0002f0;
+        --fch-toast-error-border: #a3232399;
+        --fch-loginhint-color: #ff6e57;
+        --fch-committer-highlight-bg: #7a6d0066;
+        --fch-time-highlight-bg: #6b5e00;
+        --fch-time-highlight-lesser-bg: #274d6677;
+        --fch-lightedup-bg: #6b5e00;
+        --fch-lightedup-exact-bg: #a35a00;
+        --fch-lightedup-lesser-bg: #4d4d0040;
+        --fch-parentlink-bg: #2f4f2f;
+    }
+}
+`);
+
 let floatingPanelStylesPresent = false;
 function createFloatingPanel(variant) {
     if (!floatingPanelStylesPresent) {
@@ -62,7 +117,7 @@ function createFloatingPanel(variant) {
     position: fixed;
 
     padding: 8px;
-    background: #ffdb00ee;
+    background: var(--fch-panel-bg);
 }
 .fch-FloatingPanel-bottom {
     left: 50%; bottom: 0;
@@ -133,8 +188,8 @@ function createCopyButtonFactory(title) {
 
     width: max-content;
     padding: 2px 6px;
-    background: #ffdb00f0;
-    border: #ffe54755 2px solid;
+    background: var(--fch-toast-bg);
+    border: var(--fch-toast-border) 2px solid;
     border-radius: 6px;
     opacity: 0;
 }
@@ -147,8 +202,8 @@ function createCopyButtonFactory(title) {
 }
 
 .fch-CopyButton-Toast-Error {
-    background-color: #ff0004f0;
-    border-color: #ff474755;
+    background-color: var(--fch-toast-error-bg);
+    border-color: var(--fch-toast-error-border);
 }
 `);
         copyButtonStylePresent = true;
@@ -294,7 +349,7 @@ function matchesPatterns(str, pats) {
             i.appendChild(document.createTextNode(" "));
             GM_addStyle(`
 .fch-LoginHint {
-    color: #ff2f00;
+    color: var(--fch-loginhint-color);
     text-decoration: underline dotted; /* TODO: use abbr instead? */
 }
 `);
@@ -366,13 +421,13 @@ if (document.querySelector(".RepoShortlog")) {
 }
 
 .CommitLog-item--fch-lightedUp {
-    background: #ffff00;
+    background: var(--fch-lightedup-bg);
 }
 .CommitLog-item--fch-lightedUp-exact {
-    background: #ffa400;
+    background: var(--fch-lightedup-exact-bg);
 }
 .CommitLog-item--fch-lightedUp-lesser {
-    background: #eeee0040;
+    background: var(--fch-lightedup-lesser-bg);
 }
 `);
 
@@ -702,7 +757,7 @@ if (document.querySelector(".Metadata")) {
                 const committerEmailMatch = committerEl.innerText.match("<([^<>]+?)>$");
                 // TODO: more specific patterns to match expected committers
                 if (committerEmailMatch && matchesPatterns(committerEmailMatch[1], AUTHOR_ALLOWLIST))
-                    committerEl.style.backgroundColor = "#ffee3366";
+                    committerEl.style.backgroundColor = "var(--fch-committer-highlight-bg)";
 
                 const refTime = new Date(getForCurrentSite("referenceTime"));
                 const commitTimeEl = cells[1];
@@ -711,7 +766,7 @@ if (document.querySelector(".Metadata")) {
                 if (!isNaN(+commitTime) && commitTime <= refTime) {
                     // <arbitary color> or .CommitLog-item--fch-lightedUp
                     // TODO: do I use CSS for this?
-                    commitTimeEl.style.backgroundColor = lesser ? "#aadfff77" : "#ffff00";
+                    commitTimeEl.style.backgroundColor = lesser ? "var(--fch-time-highlight-lesser-bg)" : "var(--fch-time-highlight-bg)";
                     return lesser ? "lesser" : true;
                 }
             }
@@ -764,7 +819,7 @@ if (document.querySelector(".Metadata")) {
                         }
                         const parentLink = getRowCells(selectedParent)?.[0].querySelector(":scope > a:first-child");
                         if (parentLink) {
-                            parentLink.style.backgroundColor = "#aaccaa";
+                            parentLink.style.backgroundColor = "var(--fch-parentlink-bg)";
                             amConfig.tip = parentLink.innerText;
                             amTimeout = setTimeout(() => {
                                 location.href = parentLink.href;
