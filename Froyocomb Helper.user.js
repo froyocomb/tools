@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Froyocomb Helper
 // @namespace    https://dobby233liu.neocities.org
-// @version      v1.1.18-VIBECODED-TEMPORARY-SIDE-D
+// @version      v1.1.18e-VIBECODED-TEMPORARY
 // @description  Tool for speeding up the process of finding commits from before a specific date (i.e. included with a specific build). Developed for Froyocomb, the Android pre-release source reconstruction project.
 // @author       Liu Wenyuan & Froyocomb Team
 // @match        https://android.googlesource.com/*
@@ -161,33 +161,51 @@ function createFloatingPanel(variant) {
     font: inherit;
 }
 
-/* Gitiles' native dark theme also recolors ordinary body text light gray/
-   white for contrast against its own dark backgrounds. Same problem as the
-   links below: this panel keeps its bright yellow background in dark mode,
-   so that light text is nearly unreadable here too. Force it back to dark
-   text, in dark mode only. */
+/* Dark mode: match the user's own android.googlesource.com dark-mode
+   userstyle exactly (--bg-alt / --text / --border / --link variables from
+   that stylesheet), rather than keeping the light-theme yellow panel and
+   patching individual text colors on top of it. */
 html[data-theme="dark"] .fch-FloatingPanel {
-    color: #1a1a1a;
+    background: #252526;
+    color: #d4d4d4;
+    border: 1px solid #3a3a3c;
+    border-radius: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
-@media (prefers-color-scheme: dark) {
-    html:not([data-theme="light"]) .fch-FloatingPanel {
-        color: #1a1a1a;
-    }
-}
-
-/* Gitiles' native dark theme recolors links to a light blue for contrast
-   against its own dark backgrounds. Since this panel keeps its original
-   bright yellow background in dark mode too, that light blue is nearly
-   unreadable here - so it's darkened back down specifically inside the
-   panel, in dark mode only. */
 html[data-theme="dark"] .fch-FloatingPanel a,
 html[data-theme="dark"] .fch-FloatingPanel a:visited {
-    color: #0b3d91;
+    color: #6cb6ff;
 }
+html[data-theme="dark"] .fch-FloatingPanel button {
+    background: #3a3a3c;
+    color: #d4d4d4;
+    border: 1px solid #3a3a3c;
+    border-radius: 0;
+}
+html[data-theme="dark"] .fch-FloatingPanel button:hover {
+    background: #48484a;
+}
+
 @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .fch-FloatingPanel {
+        background: #252526;
+        color: #d4d4d4;
+        border: 1px solid #3a3a3c;
+        border-radius: 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
     html:not([data-theme="light"]) .fch-FloatingPanel a,
     html:not([data-theme="light"]) .fch-FloatingPanel a:visited {
-        color: #0b3d91;
+        color: #6cb6ff;
+    }
+    html:not([data-theme="light"]) .fch-FloatingPanel button {
+        background: #3a3a3c;
+        color: #d4d4d4;
+        border: 1px solid #3a3a3c;
+        border-radius: 0;
+    }
+    html:not([data-theme="light"]) .fch-FloatingPanel button:hover {
+        background: #48484a;
     }
 }
 `);
@@ -263,6 +281,30 @@ function createCopyButtonFactory(title) {
 .fch-CopyButton-Toast-Error {
     background-color: #ff0004f0;
     border-color: #ff474755;
+}
+
+html[data-theme="dark"] .fch-CopyButton-Toast {
+    background: #2a2a2a;
+    color: #d4d4d4;
+    border-color: #3a3a3c;
+}
+html[data-theme="dark"] .fch-CopyButton-Toast-Error {
+    background-color: #5a1a1a;
+    border-color: #aa3333;
+    color: #ffb4ab;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .fch-CopyButton-Toast {
+        background: #2a2a2a;
+        color: #d4d4d4;
+        border-color: #3a3a3c;
+    }
+    html:not([data-theme="light"]) .fch-CopyButton-Toast-Error {
+        background-color: #5a1a1a;
+        border-color: #aa3333;
+        color: #ffb4ab;
+    }
 }
 `);
         copyButtonStylePresent = true;
@@ -410,6 +452,15 @@ function matchesPatterns(str, pats) {
 .fch-LoginHint {
     color: #ff2f00;
     text-decoration: underline dotted; /* TODO: use abbr instead? */
+}
+
+html[data-theme="dark"] .fch-LoginHint {
+    color: #ff8a65;
+}
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .fch-LoginHint {
+        color: #ff8a65;
+    }
 }
 `);
             const loginHint = i.appendChild(createElement("span"));
