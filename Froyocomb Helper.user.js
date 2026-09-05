@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Froyocomb Helper
 // @namespace    https://dobby233liu.neocities.org
-// @version      v1.1.18-VIBECODED-TEMPORARY-side-b
+// @version      v1.1.18-VIBECODED-TEMPORARY-SIDE-C
 // @description  Tool for speeding up the process of finding commits from before a specific date (i.e. included with a specific build). Developed for Froyocomb, the Android pre-release source reconstruction project.
 // @author       Liu Wenyuan & Froyocomb Team
 // @match        https://android.googlesource.com/*
@@ -159,6 +159,22 @@ function createFloatingPanel(variant) {
 
 .fch-FloatingPanel button {
     font: inherit;
+}
+
+/* Gitiles' native dark theme recolors links to a light blue for contrast
+   against its own dark backgrounds. Since this panel keeps its original
+   bright yellow background in dark mode too, that light blue is nearly
+   unreadable here - so it's darkened back down specifically inside the
+   panel, in dark mode only. */
+html[data-theme="dark"] .fch-FloatingPanel a,
+html[data-theme="dark"] .fch-FloatingPanel a:visited {
+    color: #0b3d91;
+}
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .fch-FloatingPanel a,
+    html:not([data-theme="light"]) .fch-FloatingPanel a:visited {
+        color: #0b3d91;
+    }
 }
 `);
         floatingPanelStylesPresent = true;
