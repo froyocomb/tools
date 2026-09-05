@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Froyocomb Helper
 // @namespace    https://dobby233liu.neocities.org
-// @version      v1.1.18-VIBECODED-TEMPORARY
+// @version      v1.1.18-VIBECODED-TEMPORARY-side-b
 // @description  Tool for speeding up the process of finding commits from before a specific date (i.e. included with a specific build). Developed for Froyocomb, the Android pre-release source reconstruction project.
 // @author       Liu Wenyuan & Froyocomb Team
 // @match        https://android.googlesource.com/*
@@ -54,17 +54,13 @@ if (SITE == "android") {
 
 const createElement = document.createElement.bind(document);
 
-// Colors used throughout this script, exposed as CSS variables so they can be
-// swapped out under Gitiles' native dark mode (html[data-theme="dark"], or no
-// data-theme attribute + prefers-color-scheme: dark for "Auto").
+// Colors for the "Light 'em up!" commit-highlighting feature, exposed as CSS
+// variables so they can be swapped out under Gitiles' native dark mode
+// (html[data-theme="dark"], or no data-theme attribute + prefers-color-scheme:
+// dark for "Auto"). Dark values match the user's own android.googlesource.com
+// dark-mode userstyle.
 GM_addStyle(`
 :root {
-    --fch-panel-bg: #ffdb00ee;
-    --fch-toast-bg: #ffdb00f0;
-    --fch-toast-border: #ffe54755;
-    --fch-toast-error-bg: #ff0004f0;
-    --fch-toast-error-border: #ff474755;
-    --fch-loginhint-color: #ff2f00;
     --fch-committer-highlight-bg: #ffee3366;
     --fch-time-highlight-bg: #ffff00;
     --fch-time-highlight-lesser-bg: #aadfff77;
@@ -75,36 +71,69 @@ GM_addStyle(`
 }
 
 html[data-theme="dark"] {
-    --fch-panel-bg: #3c3600ee;
-    --fch-toast-bg: #4a4200f0;
-    --fch-toast-border: #7a6d0099;
-    --fch-toast-error-bg: #5c0002f0;
-    --fch-toast-error-border: #a3232399;
-    --fch-loginhint-color: #ff6e57;
-    --fch-committer-highlight-bg: #7a6d0066;
-    --fch-time-highlight-bg: #6b5e00;
-    --fch-time-highlight-lesser-bg: #274d6677;
-    --fch-lightedup-bg: #6b5e00;
-    --fch-lightedup-exact-bg: #a35a00;
-    --fch-lightedup-lesser-bg: #4d4d0040;
-    --fch-parentlink-bg: #2f4f2f;
+    --fch-committer-highlight-bg: rgba(255, 214, 0, 0.18);
+    --fch-time-highlight-bg: rgba(255, 214, 0, 0.28);
+    --fch-time-highlight-lesser-bg: rgba(120, 170, 255, 0.16);
+    --fch-lightedup-bg: rgba(255, 214, 0, 0.20);
+    --fch-lightedup-exact-bg: rgba(255, 152, 0, 0.30);
+    --fch-lightedup-lesser-bg: rgba(255, 224, 130, 0.09);
+    --fch-parentlink-bg: rgba(126, 231, 135, 0.25);
 }
 
 @media (prefers-color-scheme: dark) {
     html:not([data-theme="light"]) {
-        --fch-panel-bg: #3c3600ee;
-        --fch-toast-bg: #4a4200f0;
-        --fch-toast-border: #7a6d0099;
-        --fch-toast-error-bg: #5c0002f0;
-        --fch-toast-error-border: #a3232399;
-        --fch-loginhint-color: #ff6e57;
-        --fch-committer-highlight-bg: #7a6d0066;
-        --fch-time-highlight-bg: #6b5e00;
-        --fch-time-highlight-lesser-bg: #274d6677;
-        --fch-lightedup-bg: #6b5e00;
-        --fch-lightedup-exact-bg: #a35a00;
-        --fch-lightedup-lesser-bg: #4d4d0040;
-        --fch-parentlink-bg: #2f4f2f;
+        --fch-committer-highlight-bg: rgba(255, 214, 0, 0.18);
+        --fch-time-highlight-bg: rgba(255, 214, 0, 0.28);
+        --fch-time-highlight-lesser-bg: rgba(120, 170, 255, 0.16);
+        --fch-lightedup-bg: rgba(255, 214, 0, 0.20);
+        --fch-lightedup-exact-bg: rgba(255, 152, 0, 0.30);
+        --fch-lightedup-lesser-bg: rgba(255, 224, 130, 0.09);
+        --fch-parentlink-bg: rgba(126, 231, 135, 0.25);
+    }
+}
+
+/* Extra dark-only accents for the highlight classes: a colored left edge
+   instead of a flat block, matching the translucent-tint look above. Also
+   overrides hover for these rows, since .CommitLog-item:hover has the same
+   selector specificity and could otherwise still win depending on stylesheet
+   order. */
+html[data-theme="dark"] .CommitLog-item--fch-lightedUp {
+    box-shadow: inset 3px 0 0 #ffd600;
+}
+html[data-theme="dark"] .CommitLog-item--fch-lightedUp:hover {
+    background: rgba(255, 214, 0, 0.30) !important;
+}
+html[data-theme="dark"] .CommitLog-item--fch-lightedUp-exact {
+    box-shadow: inset 3px 0 0 #ff9800;
+}
+html[data-theme="dark"] .CommitLog-item--fch-lightedUp-exact:hover {
+    background: rgba(255, 152, 0, 0.40) !important;
+}
+html[data-theme="dark"] .CommitLog-item--fch-lightedUp-lesser {
+    box-shadow: inset 3px 0 0 rgba(255, 214, 0, 0.5);
+}
+html[data-theme="dark"] .CommitLog-item--fch-lightedUp-lesser:hover {
+    background: rgba(255, 224, 130, 0.18) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .CommitLog-item--fch-lightedUp {
+        box-shadow: inset 3px 0 0 #ffd600;
+    }
+    html:not([data-theme="light"]) .CommitLog-item--fch-lightedUp:hover {
+        background: rgba(255, 214, 0, 0.30) !important;
+    }
+    html:not([data-theme="light"]) .CommitLog-item--fch-lightedUp-exact {
+        box-shadow: inset 3px 0 0 #ff9800;
+    }
+    html:not([data-theme="light"]) .CommitLog-item--fch-lightedUp-exact:hover {
+        background: rgba(255, 152, 0, 0.40) !important;
+    }
+    html:not([data-theme="light"]) .CommitLog-item--fch-lightedUp-lesser {
+        box-shadow: inset 3px 0 0 rgba(255, 214, 0, 0.5);
+    }
+    html:not([data-theme="light"]) .CommitLog-item--fch-lightedUp-lesser:hover {
+        background: rgba(255, 224, 130, 0.18) !important;
     }
 }
 `);
@@ -117,7 +146,7 @@ function createFloatingPanel(variant) {
     position: fixed;
 
     padding: 8px;
-    background: var(--fch-panel-bg);
+    background: #ffdb00ee;
 }
 .fch-FloatingPanel-bottom {
     left: 50%; bottom: 0;
@@ -188,8 +217,8 @@ function createCopyButtonFactory(title) {
 
     width: max-content;
     padding: 2px 6px;
-    background: var(--fch-toast-bg);
-    border: var(--fch-toast-border) 2px solid;
+    background: #ffdb00f0;
+    border: #ffe54755 2px solid;
     border-radius: 6px;
     opacity: 0;
 }
@@ -202,8 +231,8 @@ function createCopyButtonFactory(title) {
 }
 
 .fch-CopyButton-Toast-Error {
-    background-color: var(--fch-toast-error-bg);
-    border-color: var(--fch-toast-error-border);
+    background-color: #ff0004f0;
+    border-color: #ff474755;
 }
 `);
         copyButtonStylePresent = true;
@@ -349,7 +378,7 @@ function matchesPatterns(str, pats) {
             i.appendChild(document.createTextNode(" "));
             GM_addStyle(`
 .fch-LoginHint {
-    color: var(--fch-loginhint-color);
+    color: #ff2f00;
     text-decoration: underline dotted; /* TODO: use abbr instead? */
 }
 `);
