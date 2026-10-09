@@ -155,6 +155,7 @@ if [ $JDK_VERSION = jdk1.5.0_22 ] || [ $JDK_VERSION = jdk1.6.0_45 ]
   if ! [ -d /tmp/$JDK_VERSION.bin ]; then
    download_jdk
   fi
+   checksum_jdk
    unzip_jdk
    install_jdk_associations
    set_default_jdk
@@ -183,8 +184,32 @@ download_jdk(){
    fi
 }
 
+checksum_jdk(){
+   if [ $JDK_VERSION = jdk1.5.0_22 ]
+    then 
+     jdk5hash=$(sha256sum /tmp/jdk1.5.0_22.bin | cut -d' ' -f1)
+     if ! [ $jdk5hash = "5383e5e28872a1c7e75e9df40d931797e8bef1e11d49f662492da2b75f7cc3c0" ]; 
+      then 
+       error_msg "The downloaded file is corrupted." 
+       rm /tmp/jdk1.5.0_22.bin
+       select_jdk
+     fi
+    fi
+   if [ $JDK_VERSION = jdk1.6.0_45 ]
+    then 
+     jdk6hash=$(sha256sum /tmp/jdk1.6.0_45.bin | cut -d' ' -f1)      
+     if ! [ $jdk6hash = "6b493aeab16c940cae9e3d07ad2a5c5684fb49cf06c5d44c400c7993db0d12e8" ]; 
+      then 
+       error_msg "The downloaded file is corrupted." 
+       rm /tmp/jdk1.6.0_45.bin
+       select_jdk
+     fi
+    fi
+}
+
+
 unzip_jdk(){
-   chmod a+x /tmp/*.bin
+   chmod +x /tmp/$JDK_VERSION.bin
    cd /tmp
    /tmp/$JDK_VERSION.bin
    if ! [ -d /usr/lib/jvm ]
